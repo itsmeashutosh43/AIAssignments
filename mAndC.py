@@ -98,6 +98,57 @@ def successors(state):
 
 	return children
 
+def getString(state):
+	return (str(state.caLeft) + "," + str(state.miLeft) \
+                              + "," + state.pos + "," + str(state.caRight) + "," + \
+				str(state.miRight))
+
+
+def drawChilds(state,children,level,savedLevel,parents):
+	cString=getString(state)
+	if cString not in savedLevel.keys():
+		
+		savedLevel[cString]=level
+
+	level=savedLevel[cString]+1
+	
+	'''
+	print ("(" + str(state.caLeft) + "," + str(state.miLeft) \
+                              + "," + state.pos + "," + str(state.caRight) + "," + \
+				str(state.miRight) + ")")
+				'''
+
+	for i in children:
+		iString=getString(i)
+		if iString not in savedLevel.keys():
+			
+			savedLevel[iString]=level
+			parents[iString]=cString
+		'''
+		print ("\t"+"(" + str(i.caLeft) + "," + str(i.miLeft) \
+                              + "," + i.pos + "," + str(i.caRight) + "," + \
+				str(i.miRight) + ")")
+		'''
+	return level,savedLevel,parents
+
+def draw(savedLevel,parents):
+	restList=[]
+
+	for i,j in savedLevel.items():
+		if i in parents.values():
+			print(j*'  '+i)
+			print(j*'  '+'\\')
+		elif i=='0,0,right,3,3':
+			print(j*'  '+i)
+		else:
+			restList.append((i,j))
+
+	for i in restList:
+		print(i[1]*'  '+'|')
+		print(i[1]*'  '+i[0])
+
+
+
 
 def bfs():
 	init=State(3,3,'left',0,0)
@@ -107,27 +158,35 @@ def bfs():
 
 	allList=list()
 	exploredNodes=set()
+	level=0
+	savedLevel={}
+	parents={}
+	i=0
 
 	allList.append(init)
 	while allList:
 		state=allList.pop(0)
 		if state.goal():
+	
+			draw(savedLevel,parents)
+			
+			
 			return state
 		exploredNodes.add(state)
 		children=successors(state)
 		
 		for child in children:
 			if (child not in exploredNodes) or (child not in allList):
+
 				allList.append(child)
 
-
-
+		level,savedLevel,parents=drawChilds(state,children,level,savedLevel,parents)
 
 	return None
 
 
 
-
+'''
 def printSolutions(solution):
 	path=[]
 	path.append(solution)
@@ -145,18 +204,22 @@ def printSolutions(solution):
 		print ("(" + str(state.caLeft) + "," + str(state.miLeft) \
                               + "," + state.pos + "," + str(state.caRight) + "," + \
 str(state.miRight) + ")")
-
+'''
 
 
 
 def main():
 	solution=bfs()
 
+	'''
+
 	print ("The solution is:")
 
 	print ("missionaryleft,cannibalLeft,position,missionaryRight,cannibalRight")
 
 	printSolutions(solution)
+
+	'''
 
 
 
