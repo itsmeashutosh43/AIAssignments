@@ -1,230 +1,282 @@
-import math
+class DrawGraph:
+	def __init__(self,myself,child1=None,child2=None,child3=None,child4=None,child5=None,v=None):
 
-class State:
-	def __init__(self,miLeft,caLeft,pos,miRight,caRight):
-		self.miLeft=miLeft
-		self.caLeft=caLeft
-		self.pos=pos
-		self.miRight=miRight
-		self.caRight=caRight
-		self.parent=None
+		self.myself=myself
+		self.child1=child1
+		self.child2=child2
+		self.child3=child3
+		self.child4=child4
+		self.child5=child5
 
-	def goal(self):
-		if self.miLeft==0 and self.caLeft==0:
-			return True
+	def getAll(self):
+		return((self.child1,self.child2,self.child3,self.child4,self.child5))
 
-		else:
-			return False
+class Node:
+	def __init__(self,missionary,cannibal,boatPos,parent=None):
+		self.missionary=missionary
+		self.cannibal=cannibal
+		self.boatPos=boatPos
+		self.parent=parent
 
-	def valid(self):
-		if self.miLeft >= 0 and self.miRight >= 0 and self.caLeft >= 0 and self.caRight >= 0 and (self.miLeft == 0 or self.miLeft >= self.caLeft) and (self.miRight == 0 or self.miRight >= self.caRight):
-			return True
-		else:
-			return False
+	def __eq__(self, other): 
+		return self.missionary == other.missionary and self.cannibal==other.cannibal and self.boatPos==other.boatPos
 
-
-
-def successors(state):
-	children=[]
-
-
-	if state.pos=='left':
-		newState=State(state.miLeft,state.caLeft-2,'right',state.miRight,state.caRight+2)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-
-			
-
-		# 1 completed
-
-		newState=State(state.miLeft-1,state.caLeft-1,'right',state.miRight+1,state.caRight+1)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-
-		# 2 completed
-
-		newState=State(state.miLeft-2,state.caLeft,'right',state.miRight+2,state.caRight)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-
-		# 3 completed
-
-		newState=State(state.miLeft-1,state.caLeft,'right',state.miRight+1,state.caRight)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-
-		#4 completed
-
-		newState=State(state.miLeft,state.caLeft-1,'right',state.miRight,state.caRight+1)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-
-		#5 completed
-
-	else:
-
-		newState=State(state.miLeft+1,state.caLeft+1,'left',state.miRight-1,state.caRight-1)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-		#1 completed
-
-		newState=State(state.miLeft+2,state.caLeft,'left',state.miRight-2,state.caRight)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-
-		newState=State(state.miLeft+1,state.caLeft,'left',state.miRight-1,state.caRight)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-
-		newState=State(state.miLeft,state.caLeft+1,'left',state.miRight,state.caRight-1)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-
-		newState=State(state.miLeft,state.caLeft+2,'left',state.miRight,state.caRight-2)
-		if newState.valid():
-			children.append(newState)
-			newState.parent=state
-
-
-
-	return children
-
-def getString(state):
-	return (str(state.caLeft) + "," + str(state.miLeft) \
-                              + "," + state.pos + "," + str(state.caRight) + "," + \
-				str(state.miRight))
-
-
-def drawChilds(state,children,level,savedLevel,parents):
-	cString=getString(state)
-	if cString not in savedLevel.keys():
-		
-		savedLevel[cString]=level
-
-	level=savedLevel[cString]+1
+	def __hash__(self):
+		return hash((self.missionary,self.cannibal,self.boatPos))
 	
-	'''
-	print ("(" + str(state.caLeft) + "," + str(state.miLeft) \
-                              + "," + state.pos + "," + str(state.caRight) + "," + \
-				str(state.miRight) + ")")
-				'''
-
-	for i in children:
-		iString=getString(i)
-		if iString not in savedLevel.keys():
-			
-			savedLevel[iString]=level
-			parents[iString]=cString
-		'''
-		print ("\t"+"(" + str(i.caLeft) + "," + str(i.miLeft) \
-                              + "," + i.pos + "," + str(i.caRight) + "," + \
-				str(i.miRight) + ")")
-		'''
-	return level,savedLevel,parents
-
-def draw(savedLevel,parents):
-	restList=[]
-
-	for i,j in savedLevel.items():
-		if i in parents.values():
-			print(j*'  '+i)
-			print(j*'  '+'\\')
-		elif i=='0,0,right,3,3':
-			print(j*'  '+i)
-		else:
-			restList.append((i,j))
-
-	for i in restList:
-		print(i[1]*'  '+'|')
-		print(i[1]*'  '+i[0])
 
 
+class Tree:
+	def __init__(self,node):
+		self.node=node
+
+	def isFinal(self):
+		return (self.node.missionary==0)&(self.node.cannibal==0)&(self.node.boatPos==0)
 
 
-def bfs():
-	init=State(3,3,'left',0,0)
+	def getChildrens(self):
+		children=[]
 
-	if init.goal():
-		return init
+		if self.node.boatPos==1:
 
-	allList=list()
-	exploredNodes=set()
-	level=0
-	savedLevel={}
-	parents={}
-	i=0
+			node=Node(self.node.missionary-1,self.node.cannibal-1,1^self.node.boatPos,self.node)
 
-	allList.append(init)
-	while allList:
-		state=allList.pop(0)
-		if state.goal():
+			if checkIfPossible(node):
+				children.append(node)
+
+			node=Node(self.node.missionary,self.node.cannibal-1,1^self.node.boatPos,self.node)
+
+			if checkIfPossible(node):
+				children.append(node)
+
+			node=Node(self.node.missionary-1,self.node.cannibal,1^self.node.boatPos,self.node)
+
+			if checkIfPossible(node):
+				children.append(node)
+
+			node=Node(self.node.missionary-2,self.node.cannibal,1^self.node.boatPos,self.node)
+
+			if checkIfPossible(node):
+				children.append(node)
+
+			node=Node(self.node.missionary,self.node.cannibal-2,1^self.node.boatPos,self.node)
+
+			if checkIfPossible(node):
+				children.append(node)
+
+
+		if self.node.boatPos==0:
+
+			node=Node(self.node.missionary+1,self.node.cannibal+1,1^self.node.boatPos,self.node)
+
+			if checkIfPossible(node):
+				children.append(node)
+
+			node=Node(self.node.missionary,self.node.cannibal+1,1^self.node.boatPos,self.node)
+
+			if checkIfPossible(node):
+				children.append(node)
+
+			node=Node(self.node.missionary+1,self.node.cannibal,1^self.node.boatPos,self.node)
+
+			if checkIfPossible(node):
+				children.append(node)
+
+			node=Node(self.node.missionary+2,self.node.cannibal,1^self.node.boatPos,self.node)
+
+			if checkIfPossible(node):
+				children.append(node)
+
+			node=Node(self.node.missionary,self.node.cannibal+2,1^self.node.boatPos,self.node)
+
+			if checkIfPossible(node):
+				children.append(node)
+
+
+		return children
+
+
+
+
+def checkIfPossible(node):
+	if node.boatPos==0:
+		return (node.missionary>=node.cannibal)&(node.cannibal>=0)&(node.missionary>=0)
+	if node.boatPos==1:
+		return (node.missionary<=3)&(node.cannibal<=3)&(node.missionary>=node.cannibal)&(3-node.missionary<=3-node.cannibal)
+
+
+def doBFS():
+
+	listOfGraphs=[]
+
+	possibleList=[]
+
+	a=0
+
+	exploredSet=set()
+
+	node=Node(3,3,1,parent=None)
+
+	possibleList.append(node) # adding the first state into the list
 	
-			draw(savedLevel,parents)
-			
-			
-			return state
-		exploredNodes.add(state)
-		children=successors(state)
+	while possibleList:
 		
-		for child in children:
-			if (child not in exploredNodes) or (child not in allList):
+		a+=1
+		currentState=possibleList.pop(0)
+		exploredSet.add(currentState)
+		tree=Tree(currentState)
+		if tree.isFinal():
+			return currentState,listOfGraphs
+		children=tree.getChildrens()
+		'''
+		if a==20:
+			for ii in children:
+				print(ii.missionary,ii.cannibal,ii.boatPos)
+			break
 
-				allList.append(child)
+		'''
+		sons=[]
+		for i in children:
+			sons.append(i)			
+			if (i not in possibleList) & (i not in exploredSet):
+				possibleList.append(i)
 
-		level,savedLevel,parents=drawChilds(state,children,level,savedLevel,parents)
-
-	return None
-
-
-
-'''
-def printSolutions(solution):
-	path=[]
-	path.append(solution)
-
-	parentOfNode=solution.parent
+		len(sons)
+		drawGraph=DrawGraph(currentState,*(sons))
+		listOfGraphs.append(drawGraph)
 
 
-	while parentOfNode:
-		path.append(parentOfNode)
-		parentOfNode=parentOfNode.parent
 
-	for t in range(len(path)):
-		state=path[len(path)-t-1]
+	return 0
 
-		print ("(" + str(state.caLeft) + "," + str(state.miLeft) \
-                              + "," + state.pos + "," + str(state.caRight) + "," + \
-str(state.miRight) + ")")
-'''
+
+def doDFS():
+
+	listOfGraphs=[]
+
+	possibleList=[]
+
+	a=0
+
+	exploredSet=set()
+
+	node=Node(3,3,1,parent=None)
+
+	possibleList.append(node) # adding the first state into the list
+	
+	while possibleList:
+		
+		a+=1
+		currentState=possibleList.pop()
+		exploredSet.add(currentState)
+		tree=Tree(currentState)
+		if tree.isFinal():
+			return currentState,listOfGraphs
+		children=tree.getChildrens()
+		'''
+		if a==20:
+			for ii in children:
+				print(ii.missionary,ii.cannibal,ii.boatPos)
+			break
+
+		'''
+		sons=[]
+		for i in children:
+			sons.append(i)			
+			if (i not in possibleList) & (i not in exploredSet):
+				possibleList.append(i)
+
+		
+		drawGraph=DrawGraph(currentState,*(sons))
+		listOfGraphs.append(drawGraph)
+
+
+
+	return 0
+
+def bfsManipulations():
+	state,listOfGraphs=doBFS()
+	traversedList=[]
+	traversedList.append(state)
+
+	parent=state.parent
+
+	while parent:
+		traversedList.append(parent)
+
+		parent=parent.parent
+
+	for i in traversedList[::-1]:
+		print(i.missionary,i.cannibal,i.boatPos)
+
+
+	print ("\t \tA Complete BFS Visualization In The Console")
+	step=0
+
+	for steps in listOfGraphs:
+		step+=1
+		print("Step :",step)
+		print("     "+"("+str(steps.myself.missionary)+str(steps.myself.cannibal)+str(steps.myself.boatPos)+")"+"         ")
+
+		a=steps.getAll()
+
+		for i in a:
+			try:
+		
+				print(" "+"("+str(i.missionary)+str(i.cannibal)+str(i.boatPos)+")"+" ",end='')
+			except:
+				pass
+
+		print ('\n')
+		print ('************************************************')
+
+def dfsManipulations():
+
+	print('\n\n')
+	print('**********************************************')
+	state,listOfGraphs=doDFS()
+	traversedList=[]
+	traversedList.append(state)
+
+	parent=state.parent
+
+	while parent:
+		traversedList.append(parent)
+
+		parent=parent.parent
+
+	for i in traversedList[::-1]:
+		print(i.missionary,i.cannibal,i.boatPos)
+
+
+	print ("\t \tA Complete DFS Visualization In The Console")
+	step=0
+
+	for steps in listOfGraphs:
+		step+=1
+		print("Step :",step)
+		print("     "+"("+str(steps.myself.missionary)+str(steps.myself.cannibal)+str(steps.myself.boatPos)+")"+"         ")
+
+		a=steps.getAll()
+
+		for i in a:
+			try:
+		
+				print(" "+"("+str(i.missionary)+str(i.cannibal)+str(i.boatPos)+")"+" ",end='')
+			except:
+				pass
+
+		print ('\n')
+		print ('************************************************')
+
 
 
 
 def main():
-	solution=bfs()
-
-	'''
-
-	print ("The solution is:")
-
-	print ("missionaryleft,cannibalLeft,position,missionaryRight,cannibalRight")
-
-	printSolutions(solution)
-
-	'''
+	bfsManipulations()
+	dfsManipulations()
 
 
 
 
-if __name__=="__main__":
-	main()
-
-
+main()
