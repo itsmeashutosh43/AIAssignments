@@ -1,5 +1,17 @@
 import numpy as np
 import copy
+class Parent:
+	def __init__(self,parent,child1=None,child2=None,child3=None,child4=None):
+		self.parent=parent
+		self.child1=child1
+		self.child2=child2
+		self.child3=child3
+		self.child4=child4
+
+	def getAll(self):
+		return((self.child1,self.child2,self.child3,self.child4))
+
+
 class Board:
 	def __init__(self,boardDimention):
 		self.boardDimention=boardDimention
@@ -181,6 +193,7 @@ def main():
 		states.append(presentState)
 		i=0
 		explored=[]
+		listOfGraphs=[]
 
 		while states:
 			i+=1
@@ -193,15 +206,15 @@ def main():
 			
 
 			if board.findDistance(state,0)==0:
-				print ("Answer found biyatchhh")
-				return state
+				return listOfGraphs
 
 
 			children=board.findFourState(state)
 			
 			scores=[]
-
+			sons=[]
 			for child in children:
+				sons.append(child)
 
 				#print (child," child")
 				#print (explored," explored")
@@ -211,6 +224,10 @@ def main():
 					#scores.append(board.findDistance(child,i))
 					states.append(child)
 					#print (child,"accepted")
+
+			drawGraphs=Parent(state,(*sons))
+			listOfGraphs.append(drawGraphs)
+
 			
 			#index=min(scores)
 
@@ -231,5 +248,33 @@ def main():
 		
 		print ("Sorry the solution does not exist")
 
+		return 0
 
-main()
+
+listOfGraphs=main()
+
+if listOfGraphs!=0:
+
+	step=0
+	for steps in listOfGraphs:
+		step+=1
+
+		print ("Step, ",step)
+
+
+		print ('\t\t\t\t',steps.parent)
+
+		print ('\n')
+
+		a=steps.getAll()
+
+		for i in a:
+			try:
+				if i!=None:
+					
+					print('\t',i,end='')
+			except:
+				pass
+
+		print ('\n')
+		print ('************************************************')
