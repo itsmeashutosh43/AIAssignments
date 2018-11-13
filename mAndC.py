@@ -99,11 +99,20 @@ class Tree:
 
 
 def checkIfPossible(node):
+
+	'''
 	if node.boatPos==0:
 		return (node.missionary>=node.cannibal)&(node.cannibal>=0)&(node.missionary>=0)
 	if node.boatPos==1:
 		return (node.missionary<=3)&(node.cannibal<=3)&(node.missionary>=node.cannibal)&(3-node.missionary<=3-node.cannibal)
-
+	'''
+	if node.missionary >= 0 and (3-node.missionary) >= 0 \
+                   and node.cannibal >= 0 and (3-node.cannibal) >= 0 \
+                   and (node.missionary == 0 or node.missionary >= node.cannibal) \
+                   and ((3-node.missionary) == 0 or (3-node.missionary) >= (3-node.cannibal)):
+		return True
+	else:
+		return False
 
 def doBFS():
 
