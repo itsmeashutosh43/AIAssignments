@@ -95,6 +95,9 @@ class Tree:
 
 		return children
 
+	def getEditDistance(self,node):
+		return (node.missionary+node.cannibal)/2
+
 
 
 
@@ -203,6 +206,76 @@ def doDFS():
 
 	return 0
 
+
+def doBestFS():
+
+	listOfGraphs=[]
+
+	possibleList=[]
+
+	a=0
+
+	exploredSet=set()
+
+	node=Node(3,3,1,parent=None)
+
+	possibleList.append(node) # adding the first state into the list
+	
+	while possibleList:
+		x={}
+		
+		a+=1
+		currentState=possibleList.pop(0)
+		exploredSet.add(currentState)
+		tree=Tree(currentState)
+		if tree.isFinal():
+			return currentState,listOfGraphs
+		children=tree.getChildrens()
+		
+		'''
+		if a==2:
+			for ii in children:
+				print(ii.missionary,ii.cannibal,ii.boatPos)
+
+
+			break
+
+			'''
+
+
+
+			
+		sons=[]
+		iii=0
+		for i in children:
+			sons.append(i)			
+			iii+=1
+			if (i not in possibleList) & (i not in exploredSet):
+				a=tree.getEditDistance(i)
+				x[iii]=a
+				
+		XValueMin=min(x.values())
+
+		childrenKey=[key for key in x.keys() if (x[key] == XValueMin)].pop()
+
+		possibleList.append(children[childrenKey-1])
+
+
+		#print(children[x.get(min(x.values()))].missionary,children[x.index(min(x))].cannibal,children[x.index(min(x))].boatPos)
+		
+		
+		drawGraph=DrawGraph(currentState,*(sons))
+		listOfGraphs.append(drawGraph)
+
+		
+
+
+
+	return 0
+
+
+
+
 def bfsManipulations():
 	state,listOfGraphs=doBFS()
 	traversedList=[]
@@ -279,11 +352,55 @@ def dfsManipulations():
 		print ('************************************************')
 
 
+def bestfsManipulations():
+
+	print('\n\n')
+	print('**********************************************')
+	state,listOfGraphs=doBestFS()
+	traversedList=[]
+	traversedList.append(state)
+
+	parent=state.parent
+
+	while parent:
+		traversedList.append(parent)
+
+		parent=parent.parent
+
+	for i in traversedList[::-1]:
+		print(i.missionary,i.cannibal,i.boatPos)
+
+
+	print ("\t \tA Complete Best First Visualization In The Console")
+	step=0
+
+	for steps in listOfGraphs:
+		step+=1
+		print("Step :",step)
+		print("     "+"("+str(steps.myself.missionary)+str(steps.myself.cannibal)+str(steps.myself.boatPos)+")"+"         ")
+
+		a=steps.getAll()
+
+		for i in a:
+			try:
+		
+				print(" "+"("+str(i.missionary)+str(i.cannibal)+str(i.boatPos)+")"+" ",end='')
+			except:
+				pass
+
+		print ('\n')
+		print ('************************************************')
+
+
+
+
 
 
 def main():
 	bfsManipulations()
 	dfsManipulations()
+
+	bestfsManipulations()
 
 
 
