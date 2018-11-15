@@ -27,8 +27,9 @@ class Node:
 
 
 class Tree:
-	def __init__(self,node):
+	def __init__(self,node,num):
 		self.node=node
+		self.num=num
 
 	def isFinal(self):
 		return (self.node.missionary==0)&(self.node.cannibal==0)&(self.node.boatPos==0)
@@ -41,27 +42,27 @@ class Tree:
 
 			node=Node(self.node.missionary-1,self.node.cannibal-1,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 			node=Node(self.node.missionary,self.node.cannibal-1,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 			node=Node(self.node.missionary-1,self.node.cannibal,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 			node=Node(self.node.missionary-2,self.node.cannibal,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 			node=Node(self.node.missionary,self.node.cannibal-2,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 
@@ -69,27 +70,27 @@ class Tree:
 
 			node=Node(self.node.missionary+1,self.node.cannibal+1,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 			node=Node(self.node.missionary,self.node.cannibal+1,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 			node=Node(self.node.missionary+1,self.node.cannibal,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 			node=Node(self.node.missionary+2,self.node.cannibal,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 			node=Node(self.node.missionary,self.node.cannibal+2,1^self.node.boatPos,self.node)
 
-			if checkIfPossible(node):
+			if checkIfPossible(node,self.num):
 				children.append(node)
 
 
@@ -101,7 +102,7 @@ class Tree:
 
 
 
-def checkIfPossible(node):
+def checkIfPossible(node,x):
 
 	'''
 	if node.boatPos==0:
@@ -109,15 +110,16 @@ def checkIfPossible(node):
 	if node.boatPos==1:
 		return (node.missionary<=3)&(node.cannibal<=3)&(node.missionary>=node.cannibal)&(3-node.missionary<=3-node.cannibal)
 	'''
-	if node.missionary >= 0 and (3-node.missionary) >= 0 \
-                   and node.cannibal >= 0 and (3-node.cannibal) >= 0 \
+	
+	if node.missionary >= 0 and (x-node.missionary) >= 0 \
+                   and node.cannibal >= 0 and (x-node.cannibal) >= 0 \
                    and (node.missionary == 0 or node.missionary >= node.cannibal) \
-                   and ((3-node.missionary) == 0 or (3-node.missionary) >= (3-node.cannibal)):
+                   and ((x-node.missionary) == 0 or (x-node.missionary) >= (x-node.cannibal)):
 		return True
 	else:
 		return False
 
-def doBFS():
+def doBFS(x):
 
 	listOfGraphs=[]
 
@@ -127,7 +129,7 @@ def doBFS():
 
 	exploredSet=set()
 
-	node=Node(3,3,1,parent=None)
+	node=Node(x,x,1,parent=None)
 
 	possibleList.append(node) # adding the first state into the list
 	
@@ -136,7 +138,7 @@ def doBFS():
 		a+=1
 		currentState=possibleList.pop(0)
 		exploredSet.add(currentState)
-		tree=Tree(currentState)
+		tree=Tree(currentState,x)
 		if tree.isFinal():
 			return currentState,listOfGraphs
 		children=tree.getChildrens()
@@ -162,7 +164,7 @@ def doBFS():
 	return 0
 
 
-def doDFS():
+def doDFS(x):
 
 	listOfGraphs=[]
 
@@ -172,7 +174,7 @@ def doDFS():
 
 	exploredSet=set()
 
-	node=Node(3,3,1,parent=None)
+	node=Node(x,x,1,parent=None)
 
 	possibleList.append(node) # adding the first state into the list
 	
@@ -181,7 +183,7 @@ def doDFS():
 		a+=1
 		currentState=possibleList.pop()
 		exploredSet.add(currentState)
-		tree=Tree(currentState)
+		tree=Tree(currentState,x)
 		if tree.isFinal():
 			return currentState,listOfGraphs
 		children=tree.getChildrens()
@@ -207,7 +209,7 @@ def doDFS():
 	return 0
 
 
-def doBestFS():
+def doBestFS(num):
 
 	listOfGraphs=[]
 
@@ -217,7 +219,7 @@ def doBestFS():
 
 	exploredSet=set()
 
-	node=Node(3,3,1,parent=None)
+	node=Node(num,num,1,parent=None)
 
 	possibleList.append(node) # adding the first state into the list
 	
@@ -227,23 +229,11 @@ def doBestFS():
 		a+=1
 		currentState=possibleList.pop(0)
 		exploredSet.add(currentState)
-		tree=Tree(currentState)
+		tree=Tree(currentState,num)
 		if tree.isFinal():
 			return currentState,listOfGraphs
 		children=tree.getChildrens()
 		
-		'''
-		if a==2:
-			for ii in children:
-				print(ii.missionary,ii.cannibal,ii.boatPos)
-
-
-			break
-
-			'''
-
-
-
 			
 		sons=[]
 		iii=0
@@ -276,8 +266,8 @@ def doBestFS():
 
 
 
-def bfsManipulations():
-	state,listOfGraphs=doBFS()
+def bfsManipulations(x):
+	state,listOfGraphs=doBFS(x)
 	traversedList=[]
 	traversedList.append(state)
 
@@ -312,11 +302,11 @@ def bfsManipulations():
 		print ('\n')
 		print ('************************************************')
 
-def dfsManipulations():
+def dfsManipulations(x):
 
 	print('\n\n')
 	print('**********************************************')
-	state,listOfGraphs=doDFS()
+	state,listOfGraphs=doDFS(x)
 	traversedList=[]
 	traversedList.append(state)
 
@@ -352,11 +342,11 @@ def dfsManipulations():
 		print ('************************************************')
 
 
-def bestfsManipulations():
+def bestfsManipulations(x):
 
 	print('\n\n')
 	print('**********************************************')
-	state,listOfGraphs=doBestFS()
+	state,listOfGraphs=doBestFS(x)
 	traversedList=[]
 	traversedList.append(state)
 
@@ -397,10 +387,12 @@ def bestfsManipulations():
 
 
 def main():
-	bfsManipulations()
-	dfsManipulations()
 
-	bestfsManipulations()
+	x=int(input("Enter the no. of missionaries and cannibals "))
+	bfsManipulations(x)
+	dfsManipulations(x)
+
+	bestfsManipulations(x)
 
 
 
