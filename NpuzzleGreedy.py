@@ -75,7 +75,7 @@ class Board:
 				presentState3[newX][newY]=presentState3[x][y]
 				presentState3[x][y]=temp
 				allPossibleStates.append(presentState3)
-				print(newX,newY)
+				
 		except IndexError:
 			pass
 
@@ -89,12 +89,34 @@ class Board:
 			presentState4[newX][newY]=presentState4[x][y]
 			presentState4[x][y]=temp
 			allPossibleStates.append(presentState4)
-			print(newX,newY)
+		
 		except IndexError:
 			pass
 
 
 		return np.array(allPossibleStates)
+
+
+	def findManhattanDistance(self,child,i):
+		size=self.boardDimention
+		newArray=self.goal.copy()
+		count=0
+		placeDict={1:(0,0),2:(0,1),3:(0,2),4:(1,0),5:(1,1),6:(1,2),7:(2,0),8:(2,1)}
+
+		for a in range(size):
+			for b in range(size):
+				if child[a][b]!=0:
+					number=placeDict[child[a][b]]
+					sumX=abs(a-number[0])
+					sumY=abs(b-number[1])
+
+					total=sumY+sumX
+					
+					count+=total
+				else:
+					pass
+
+		return count
 
 
 	def findDistance(self,child,i):
@@ -195,7 +217,7 @@ def findAnswer():
 			i+=1
 			explored=[]
 			state=states.pop()
-			explored.append(state)
+			explored.append(state.tolist())
 			
 
 			if board.findDistance(state,0)==0:
@@ -215,7 +237,11 @@ def findAnswer():
 			
 			index=min(scores)
 
-			states.append(children[scores.index(index)])
+			newFeature=children[scores.index(index)]
+
+			if newFeature.tolist() not in explored:
+
+				states.append(children[scores.index(index)])
 
 			drawGraphs=Parent(state,(*newChildren))
 

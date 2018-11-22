@@ -97,6 +97,28 @@ class Board:
 		return np.array(allPossibleStates)
 
 
+	def findManhattanDistance(self,child,i):
+		size=self.boardDimention
+		newArray=self.goal.copy()
+		count=0
+		placeDict={1:(0,0),2:(0,1),3:(0,2),4:(1,0),5:(1,1),6:(1,2),7:(2,0),8:(2,1)}
+
+		for a in range(size):
+			for b in range(size):
+				if child[a][b]!=0:
+					number=placeDict[child[a][b]]
+					sumX=abs(a-number[0])
+					sumY=abs(b-number[1])
+
+					total=sumY+sumX
+					
+					count+=total
+				else:
+					pass
+
+		return count
+
+
 	def findDistance(self,child,i):
 		size=self.boardDimention
 		newArray=self.goal.copy()
@@ -211,7 +233,7 @@ def findAnswer():
 				newChildren.append(child)
 					
 
-				scores.append(board.findDistance(child,i))
+				scores.append(board.findManhattanDistance(child,i))
 			
 			index=min(scores)
 
