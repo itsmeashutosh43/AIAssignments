@@ -199,6 +199,7 @@ def main():
 			i+=1
 			
 			state=states.pop()
+			#popping the current state
 
 			explored.append(state)
 
@@ -207,19 +208,19 @@ def main():
 
 			if board.findDistance(state,0)==0:
 				return listOfGraphs
+				#returning if we reach the goal state.
 
 
 			children=board.findFourState(state)
-			
+			#finding atmost four states given a child c.
+
 			scores=[]
 			sons=[]
 			for child in children:
 				sons.append(child)
-
-				#print (child," child")
-				#print (explored," explored")
 				
 				if (child not in explored) and (child not in states):
+					#checking if the state is already explored
 					
 					#scores.append(board.findDistance(child,i))
 					states.append(child)

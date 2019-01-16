@@ -15,6 +15,7 @@ class MainClass:
             self.frame, text="Send 1 Missionary", command=self.send1Mi)
 		send1M.grid(row=0, column=0)
 
+
 		send1C = Button(self.frame, text="Send 1 Cannibal", command=self.send1Ca)
 		send1C.grid(row=0, column=1)
 
@@ -38,6 +39,9 @@ class MainClass:
 
 
 	def send1Mi():
+		# destroy all image
+		# state + 1
+
 		pass
 
 	def send1Ca():
